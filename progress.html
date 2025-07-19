@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Progress</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Your Fitness Progress</h1>
+  <p>Here you can see your daily progress in terms of calories consumed, workout time, sleep time, and weight.</p>
+  <p>Streak: 5 successful days</p>
+  <table>
+    <tr>
+      <th>Date</th>
+      <th>Calories Consumed</th>
+      <th>Workout Time (hours)</th>
+      <th>Sleep Time (hours)</th>
+      <th>Weight (kg)</th>
+      <th>Succsess</th>
+    </tr>
+
+    {% for day in tracked_days %}
+    <tr>
+      <td>{{ day.date }}</td>
+      <td>{{ day.calories }}</td>
+      <td>{{ day.workout }}</td>
+      <td>{{ day.sleep }}</td>
+      <td>{{ day.weight }}</td>
+      <td>{% if day.successful_day %}✅{% else %}❌{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>
