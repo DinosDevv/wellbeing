@@ -75,12 +75,23 @@ def track():
 
   return jsonify(read_json_file('data/tracked_days.json'))
 
+@app.route('/premium')
+def premium():
+  return render_template('premium.html')
+
 @app.route('/progress')
 def progress():
   tracked_days = read_json_file('data/tracked_days.json')
+  
+  successful_days = 0
+  for day in tracked_days:
+    if day.get('successful_day', False):
+      successful_days += 1
 
-  return render_template('progress.html', tracked_days=tracked_days)
+  submissions = [day['date'] for day in tracked_days]
+  submissions = len(submissions)
 
+  return render_template('progress.html', tracked_days=tracked_days, successful_days=successful_days, submissions=submissions)
 
 if __name__ == '__main__':
     app.run(debug=True)
