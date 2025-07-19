@@ -30,14 +30,11 @@ def calculate():
     'gender': gender,
     'calories': calculate_calories(age, height, weight, activity_level),
     'sleep': calculate_sleep(sleep_estimation, age),
-    'workout': calculate_workout(available_time, activity_level)
+    'workout': calculate_workout(available_time, activity_level),
+    'rank': 'Rookie'
   })
 
   return redirect('/dashboard')
-
-@app.route('/dashboard')
-def dashboard():
-  return render_template('dashboard.html', data=read_json_file('data/user_data.json'))
 
 @app.route('/track_day')
 def track_day():
@@ -73,7 +70,7 @@ def track():
 
   append_to_json_file('data/tracked_days.json', data)
 
-  return jsonify(read_json_file('data/tracked_days.json'))
+  return redirect('/progress')
 
 @app.route('/premium')
 def premium():
@@ -82,7 +79,24 @@ def premium():
 @app.route('/progress')
 def progress():
   tracked_days = read_json_file('data/tracked_days.json')
+  user_data = read_json_file('data/user_data.json')
+
+  days_to_display = []
+
   
+  if(len(tracked_days) <= 5):
+    print('Less')
+    for i in range(len(tracked_days)):
+      i = i+1
+      days_to_display.append(tracked_days[-i])
+  else:
+    for i in range(5):
+      i = i+1
+      days_to_display.append(tracked_days[-i])
+    print('More')
+
+  print(days_to_display)
+
   successful_days = 0
   for day in tracked_days:
     if day.get('successful_day', False):
@@ -90,8 +104,23 @@ def progress():
 
   submissions = [day['date'] for day in tracked_days]
   submissions = len(submissions)
+  user = {
+    "username": "Konstantinos", 
+    "rank": user_data['rank']
+  }
 
-  return render_template('progress.html', tracked_days=tracked_days, successful_days=successful_days, submissions=submissions)
+  return render_template('progress.html', tracked_days=days_to_display, successful_days=successful_days, submissions=submissions, data=read_json_file('data/user_data.json'), user=user)
+
+@app.route('/show-submissions')
+def show_submissions():
+  return render_template('submissions.html', tracked_days=read_json_file('data/tracked_days.json'))
+
+@app.route('/clear_data', methods=['POST'])
+def clear_data():
+  clear = []
+  overwrite_json_file('data/tracked_days.json', clear)
+
+  return redirect('/show-submissions')
 
 if __name__ == '__main__':
     app.run(debug=True)
